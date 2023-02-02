@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+/recipe-frontend/.angular/cache
+/recipe-frontend/node_modules
+/recipe-frontend/dist
+/recipe-frontend/tmp
+/recipe-frontend/out-tsc
+/recipe-frontend/bazel-out

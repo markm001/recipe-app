@@ -34,3 +34,14 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.bootJar {
+	from("recipe-frontend/dist/recipe-frontend") {
+		include("**/*")
+		into("public")
+	}
+}
+
+tasks.processResources {
+	dependsOn("recipe-frontend:build")
+}
