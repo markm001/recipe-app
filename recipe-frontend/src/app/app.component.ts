@@ -6,4 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  displayedComponent:string = 'recipes'
+
+  onDisplayComponent(component:string) {
+    this.displayedComponent = component
+  }
 }
