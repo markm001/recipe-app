@@ -3,9 +3,6 @@
     <app-recipe-list></app-recipe-list>
   </div>
   <div class="col-md-7">
-    <app-recipe-detail
-      *ngIf="displayedRecipe; else displayPrompt"
-      [currentRecipe]="displayedRecipe"></app-recipe-detail>
-    <ng-template #displayPrompt>Select a Recipe to display!</ng-template>
+    <router-outlet></router-outlet>
   </div>
 </div>
