@@ -8,6 +8,7 @@ import {Subject} from "rxjs";
   providedIn: 'root'
 })
 export class RecipeService {
+  recipesUpdated = new Subject<Array<Recipe>>()
 
   private recipeList: Array<Recipe> = [
     new Recipe("Blin",
@@ -42,5 +43,20 @@ export class RecipeService {
 
   getRecipeById(index:number): Recipe {
     return this.recipeList[index]
+  }
+
+  updateRecipe(id: number, recipe: Recipe) {
+    this.recipeList[id] = recipe
+    this.recipesUpdated.next(this.recipeList.slice())
+  }
+
+  addRecipe(recipe: Recipe) {
+    this.recipeList.push(recipe)
+    this.recipesUpdated.next(this.recipeList.slice())
+  }
+
+  deleteRecipe(recipeId: number) {
+    this.recipeList.splice(recipeId,1)
+    this.recipesUpdated.next(this.recipeList.slice())
   }
 }
