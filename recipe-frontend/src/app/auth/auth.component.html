@@ -4,9 +4,7 @@
       <app-load-spinner></app-load-spinner>
     </div>
 
-    <div class="alert alert-danger" *ngIf="error">
-      <p>{{ error }}</p>
-    </div>
+<!--    <app-alert [message]="error" *ngIf="error" (closed)="onErrorHandle()"></app-alert>-->
 
     <form (ngSubmit)="onFormSubmit(form)" #form="ngForm" *ngIf="!isLoading">
       <h2>{{ getModeLabel() }}</h2>

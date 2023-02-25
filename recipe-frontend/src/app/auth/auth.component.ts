@@ -1,20 +1,25 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy, ViewChild, ViewContainerRef} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthResponse, AuthService} from "./auth.service";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {Router} from "@angular/router";
+import {AlertComponent} from "../shared/alert/alert.component";
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent {
+export class AuthComponent implements OnDestroy {
   isLogin = true
   isLoading = false
-  error?:string
+  error!:string | null
 
-  constructor(private authService: AuthService, private router:Router) { }
+  closedSubscription!:Subscription
+
+  constructor(private authService: AuthService,
+              private router:Router,
+              private containerRef:ViewContainerRef) { }
 
   switchMode() {
     this.isLogin = !this.isLogin
@@ -48,11 +53,32 @@ export class AuthComponent {
         this.isLoading = false
       },
       error: message => {
-        this.error = message
+        // this.error = message
+        this.showErrorAlert(message)
+
         this.isLoading = false
       }
     })
 
     form.reset()
+  }
+
+  onErrorHandle() {
+    this.error = null
+  }
+
+  private showErrorAlert(message: string) {
+    const componentRef = this.containerRef.createComponent(AlertComponent);
+    componentRef.instance.message = message
+    this.closedSubscription = componentRef.instance.closed.subscribe(()=>{
+      this.closedSubscription.unsubscribe()
+      this.containerRef.clear()
+    });
+  }
+
+  ngOnDestroy(): void {
+    if(this.closedSubscription) {
+      this.closedSubscription.unsubscribe()
+    }
   }
 }
