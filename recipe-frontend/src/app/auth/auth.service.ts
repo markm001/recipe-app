@@ -8,7 +8,7 @@ import {Router} from "@angular/router";
   providedIn: 'root'
 })
 export class AuthService {
-  private API_KEY = 'AIzaSyAXi8zrOVLRKsUt67K88r8VnRmVJXH2bRM'
+  private API_KEY = 'Xzkvt8ma6rHokui2rBVNSirxmjr8alyr8vz78sa'
   user = new BehaviorSubject<User | null>(null)
   tokenExpirationTimer: any
 
