@@ -3,12 +3,12 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, Observable, tap, throwError} from "rxjs";
 import {User} from "./user.model";
 import {Router} from "@angular/router";
+import {environment} from "../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private API_KEY = 'Xzkvt8ma6rHokui2rBVNSirxmjr8alyr8vz78sa'
   user = new BehaviorSubject<User | null>(null)
   tokenExpirationTimer: any
 
@@ -16,7 +16,7 @@ export class AuthService {
 
   signUp(email: string, password: string): Observable<AuthResponse> {
     return this.client.post<AuthResponse>(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + this.API_KEY,
+      'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + environment.API_KEY,
       {
         email: email,
         password: password,
@@ -39,7 +39,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.client.post<AuthResponse>(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + this.API_KEY,
+      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + environment.API_KEY,
       {
         email: email,
         password: password,
