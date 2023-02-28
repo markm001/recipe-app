@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Recipe} from "../model/recipe";
 import {Ingredient} from "../model/ingredient";
-import {ShoppingListService} from "../shopping-list/shopping-list.service";
 import {Subject} from "rxjs";
+import {Store} from "@ngrx/store";
+import * as ShoppingListActions from "../shopping-list/store/shopping-list.actions";
+import * as fromShoppingList from "../shopping-list/store/shopping-list.reducer"
 
 @Injectable({
   providedIn: 'root'
@@ -11,34 +13,15 @@ export class RecipeService {
   recipesUpdated = new Subject<Recipe[]>()
 
   private recipeList: Array<Recipe> = []
-  //   new Recipe("Blin",
-  //     "Delicious, thin Blin, perfect for filling with Jam or Yoghurt.",
-  //     "https://img.taste.com.au/p9uvLZX4/taste/2010/01/basic-scones_1980x1320-118375-1.jpg",
-  //     [
-  //       new Ingredient('Flour', 100),
-  //       new Ingredient('Butter', 240),
-  //       new Ingredient('Milk', 100),
-  //       new Ingredient('Egg', 1)
-  //     ]),
-  //   new Recipe("French Toast",
-  //     "Nice, toasty French Toast!",
-  //     "https://img.taste.com.au/p9uvLZX4/taste/2010/01/basic-scones_1980x1320-118375-1.jpg",
-  //     [
-  //       new Ingredient('Toast', 6),
-  //       new Ingredient('Milk', 200),
-  //       new Ingredient('Egg', 2)
-  //     ])
-  // ]
 
-  constructor(private shoppingService: ShoppingListService) { }
-
-  //will return a copy of the array,instead of direct reference
-  getRecipeList() {
-    return this.recipeList.slice()
-  }
+  constructor(private store: Store<fromShoppingList.AppState>) { }
 
   addIngredients(ingredients: Array<Ingredient>) {
-    this.shoppingService.addAllToIngredientsList(ingredients)
+    this.store.dispatch(ShoppingListActions.addIngredients({ ingredients }))
+  }
+
+  getRecipeList() {
+    return this.recipeList.slice()
   }
 
   getRecipeById(index: number): Recipe {
