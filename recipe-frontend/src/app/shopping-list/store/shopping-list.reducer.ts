@@ -3,10 +3,6 @@ import {Action, createReducer, on} from "@ngrx/store";
 
 import * as ShoppingListActions from './shopping-list.actions';
 
-export interface AppState {
-  shoppingList: State
-}
-
 export interface State {
   ingredients: Ingredient[],
   editedIngredient: Ingredient | null,
@@ -35,7 +31,6 @@ const _shoppingListReducer = createReducer(
     ShoppingListActions.addIngredients,
     (state, action) => ({
       ...state,
-      //pull out action.ingredients array and add each element to state.ingredients array
       ingredients: state.ingredients.concat(...action.ingredients)
     })
   ),
