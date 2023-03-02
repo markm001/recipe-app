@@ -3,7 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {Recipe} from "./model/recipe";
 import {RecipeService} from "./recipes/recipe.service";
 import {map, Observable, tap} from "rxjs";
-import {AuthService} from "./auth/auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +31,6 @@ export class DataStorageService {
   saveData() {
     const recipeList = this.recipeService.getRecipeList();
 
-    //Firebase-specific: put request to override all data under a Node:
     this.client.put<Recipe[]>(
       'https://ng-recipe-app-f3b76-default-rtdb.europe-west1.firebasedatabase.app/recipes.json',
       recipeList
