@@ -1,16 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
-import {RecipeService} from "../recipe.service";
 import {Recipe} from "../../model/recipe";
+import {Store} from "@ngrx/store";
+import * as fromRoot from "../../store/app.reducer";
+import * as RecipeActions from "../store/recipe.actions"
+import {map, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-recipe-edit',
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.css']
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy {
   id!: number
+  editing = false
+  recipeForm!: FormGroup
+  private subscription!: Subscription
 
   ngOnInit(): void {
     this.route.params.subscribe(
@@ -23,13 +29,9 @@ export class RecipeEditComponent implements OnInit {
     )
   }
 
-  editing = false
-
-  recipeForm!: FormGroup
-
   constructor(private route: ActivatedRoute,
-              private recipeService: RecipeService,
-              private router: Router) {
+              private router: Router,
+              private store: Store<fromRoot.AppState>) {
   }
 
   private initForm() {
@@ -39,12 +41,18 @@ export class RecipeEditComponent implements OnInit {
     let recipeIngredients: FormArray = new FormArray<any>([])
 
     if (this.editing) {
-      const recipe = this.recipeService.getRecipeById(this.id)
-
-      recipeName = recipe.name
-      recipeDescription = recipe.description
-      recipeImagePath = recipe.imagePath
-      recipeIngredients = this.checkRecipeIngredients(recipe)
+      this.subscription = this.store.select('recipes').pipe(
+        map(state => state.recipes.find(
+              (_, index) => {
+                return index == this.id
+              })
+          )
+      ).subscribe((recipe) => {
+        recipeName = recipe!.name
+        recipeDescription = recipe!.description
+        recipeImagePath = recipe!.imagePath
+        recipeIngredients = this.checkRecipeIngredients(recipe!)
+      })
     }
 
     this.recipeForm = new FormGroup({
@@ -85,11 +93,12 @@ export class RecipeEditComponent implements OnInit {
     )
 
     if (this.editing) {
-      this.recipeService.updateRecipe(this.id, recipe)
-      //also works instead of created new Object:
-      // this.recipeService.updateRecipe(this.id, this.recipeForm.value)
+      this.store.dispatch(RecipeActions.updateRecipe({
+        index: this.id,
+        recipe: recipe
+      }))
     } else {
-      this.recipeService.addRecipe(recipe)
+      this.store.dispatch(RecipeActions.addRecipe({ recipe }))
     }
     this.navigateToPreviousPage()
   }
@@ -110,10 +119,16 @@ export class RecipeEditComponent implements OnInit {
 
   private navigateToPreviousPage() {
     this.editing = false
-    this.router.navigate(['../'],{relativeTo:this.route})
+    this.router.navigate(['../'], {relativeTo: this.route}).then()
   }
 
   onDeleteIngredient(index:number) {
     (this.recipeForm.get('ingredients') as FormArray).removeAt(index)
+  }
+
+  ngOnDestroy(): void {
+    if(this.subscription) {
+      this.subscription.unsubscribe()
+    }
   }
 }

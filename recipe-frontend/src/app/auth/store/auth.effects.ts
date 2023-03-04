@@ -7,6 +7,7 @@ import {Injectable} from "@angular/core";
 import {Router} from "@angular/router";
 import {User} from "../user.model";
 import {AuthService} from "../auth.service";
+import {authenticateSuccess} from "./auth.actions";
 
 @Injectable()
 export class AuthEffects {
@@ -78,8 +79,10 @@ export class AuthEffects {
   authRedirect$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.authenticateSuccess),
-      tap(() => {
-        this.router.navigate(['/']).then()
+      tap((action) => {
+        if(action.redirect) {
+          this.router.navigate(['/']).then()
+        }
       })
     ), { dispatch: false }
   )
@@ -116,7 +119,8 @@ export class AuthEffects {
             email: loadedUser.email,
             userId: loadedUser.id,
             token: loadedUser.token,
-            expirationDate: tokenExpirationDate
+            expirationDate: tokenExpirationDate,
+            redirect: false
           })
         }
         return { type: 'Empty Action' }
@@ -134,7 +138,8 @@ function handleAuthentication(email: string, userId: string, token: string, expi
     email: email,
     userId: userId,
     token: token,
-    expirationDate: expirationDate
+    expirationDate: expirationDate,
+    redirect: true
   });
 }
 
